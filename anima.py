@@ -1,8 +1,8 @@
-import inspect
-import sys
-sys.path.append(r'C:\Users\lain\github')
+import inspect, sys
+from config import ALIST, PARENT_DIR
+sys.path.append(PARENT_DIR)
 from push_rss import string_to_list, read, write
-from config import ALIST
+
 
 def test_anima_config():
 

@@ -1,4 +1,11 @@
-ALIST = "anima_config.yml"
+import os
+
+# 获取当前位置
+home_dir = os.path.dirname(__file__)
+# 获取父目录
+PARENT_DIR = os.path.dirname(home_dir)
+# 获取配置文件所在位置
+ALIST = os.path.join(home_dir, "anima_config.yml")
 
 class Rss:
     # 过滤天数, 只获取 Day 天内的内容
