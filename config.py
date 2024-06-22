@@ -27,7 +27,3 @@ class Aria2Config:
 
     SERVER = f"http://{server}:{port}/rpc"
     SECRET = "LoongLit"
-
-
-
-

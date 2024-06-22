@@ -27,9 +27,9 @@ def main():
         # 下载种子, 并记录已下载的文件
         for episode in download_list:
             url = download_list[episode]
-            # InvokeDownloader(url, downloader)
-            # write_anima(name, episode)
-            print(episode, url, name)
+            InvokeDownloader(url, downloader)
+            write_anima(name, episode)
+
         
 
 if __name__ == "__main__":
