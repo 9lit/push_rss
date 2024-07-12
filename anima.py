@@ -74,7 +74,7 @@ class ParseAnimaList:
 
         try: config_name = self.item[caller_name]
         except KeyError: config_name = []
-        return string_to_list(config_name) if config_name else config_name
+        return string_to_list(config_name) if config_name else []
     
     def rssindex(self):
 
