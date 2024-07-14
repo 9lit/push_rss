@@ -3,105 +3,79 @@ from config import ALIST, PARENT_DIR
 sys.path.append(PARENT_DIR)
 from push_rss import string_to_list, read, write
 
+class OperateAnimeConfigFile:
 
-def test_anima_config():
+    def get_config_file(): return read(ALIST)
 
-    config = __read_config()
+    def rule_sets() -> dict:
+        return OperateAnimeConfigFile.get_config_file()['animation']
+    
+    def rss_list() -> list:
+        return OperateAnimeConfigFile.get_config_file()['rss']
 
-    try:
-        config_default = config['default']
-        config_default['downloader'], config_default['rssindex']
-        rss = config['rss']
-        if not rss: raise "rss 列表为空"
-        animation = config['animation']
-
-        for a in animation: animation[a]['whitelist']
-
-    except KeyError as e:
-        print(f"配置{ALIST}缺少配置项{e}")
-        exit()
-
-
-def __read_config():
-    return read(ALIST)
-
-def animalist() -> dict:
-    return __read_config()['animation']
-
-def anima_default() -> tuple:
-
-    config = __read_config()['default']
-    return config['downloader'], config['rssindex']
-
-def anima_rss() -> list:
-    return __read_config()['rss']
+    def default() -> tuple:
+        return OperateAnimeConfigFile.get_config_file()['default']
 
     
-def write_anima(name, episode):
+    def write_episode_to_anime_config(name, episode):
 
-    def format_episode():
-        # 格式化集数, 如果集数格式为 1 则格式化为 01
-        return episode if len(str(episode)) > 1 else f"0{episode}"
-    
-    def alter():
-        #将新的集数写入到字典中去
-        episode= format_episode()
-        new_config = __read_config()
-        episode_config = new_config['animation'][name]["episode"]
-        new_config['animation'][name]["episode"] = f"{episode_config},{episode}" if episode_config else episode
-        return new_config
-    
-    write(content=alter(), path=ALIST)
+        def format_episode():
+            # 格式化集数, 如果集数格式为 1 则格式化为 01
+            return episode if len(str(episode)) > 1 else f"0{episode}"
+        
+        def alter():
+            #将新的集数写入到字典中去
+            episode= format_episode()
+            new_config = OperateAnimeConfigFile.get_config_file()
+            episode_config = new_config['animation'][name]["episode"]
+            new_config['animation'][name]["episode"] = f"{episode_config},{episode}" if episode_config else episode
+            return new_config
+        
+        write(content=alter(), path=ALIST)
 
 
 class ParseAnimaList:
 
-    def __init__(self, item) -> tuple:
-        self.item = item
-        self.default_downloader, self.default_rssindex = anima_default()
-        self.rsslist = anima_rss()
+    def __init__(self, anime_rule_set) -> None:
+        self.anime_rule_set = anime_rule_set
+        self.default = OperateAnimeConfigFile.default()
+        self.rss_list = OperateAnimeConfigFile.rss_list()
 
-    
     def __call__(self) -> tuple:
 
-        return self.rssindex(), self.whitelist(), self.blacklist(), self.episode(), self.downloader()
+        return self.rss(), self.whitelist(), self.blacklist(), self.episode(), self.downloader()
 
 
-    def __main(self):
+    def __main(self) -> list:
 
+        # 获取调用者的方法名称
         caller_frame = inspect.stack()[1]
         caller_name = caller_frame[3]
-
-        try: config_name = self.item[caller_name]
+        
+        # 获取追番列表中的规则集, 白名单, 黑名单, 集数, 以及下载器
+        try: config_name = self.anime_rule_set[caller_name]
         except KeyError: config_name = []
         return string_to_list(config_name) if config_name else []
     
-    def rssindex(self):
+    def rss(self) -> str:
 
-        rss_index = self.__main()
+        try:
+            rss_number = self.__main()[0]
+            rss_string = self.rss_list[rss_number]
+        except IndexError:
+            default_rss_number = self.default[self.rss.__name__]
+            rss_string = self.rss_list[default_rss_number]
 
-        if rss_index:
-            try: rss_config = self.rsslist[rss_index]
-            except IndexError:
-                print("没有指定的 rss 连接, 默认使用第一个")
-                rss_config = self.rsslist[self.default_rssindex]
+        return rss_string
 
-        else:
-            rss_config = self.rsslist[self.default_rssindex]
+    def downloader(self) -> str: 
+        downloader = self.__main(); default_downloader = self.default[self.downloader.__name__]
+        
+        return downloader[0] if downloader else default_downloader
 
-        return rss_config
     
-    def whitelist(self):
-        return self.__main()
+    def whitelist(self) -> list: return self.__main()
     
-    def blacklist(self):
-        return self.__main()
+    def blacklist(self) -> list: return self.__main()
     
-    def episode(self):
-        return self.__main()
-    
-    def downloader(self):
-        downloader = self.__main()
-
-        return downloader if downloader else self.default_downloader
-    
+    def episode(self) -> list: return self.__main()    

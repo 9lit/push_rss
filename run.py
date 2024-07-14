@@ -1,12 +1,8 @@
-from anima import ParseAnimaList, animalist, write_anima
+from anima import ParseAnimaList, OperateAnimeConfigFile
 from rss import GetXml, Filter
 from downloader import InvokeDownloader
+import test
 import sys
-
-class self_test:
-    from anima import test_anima_config
-    test_anima_config()
-
 
 def param():
 
@@ -16,13 +12,13 @@ def param():
 
 def main():
     xml_history = {}
-    alist = animalist()
+    rule_sets = OperateAnimeConfigFile.rule_sets()
 
-    for name, item in alist.items():
+    for anime_name, anime_rule_set in rule_sets.items():
         
         # 获取列表中的数据
-        anima = ParseAnimaList(item)
-        rss, whitelist, blacklist, episodes, downloader = anima()
+        anima_rule = ParseAnimaList(anime_rule_set)
+        rss, whitelist, blacklist, episodes, downloader = anima_rule()
 
         # 获取订阅内容
         xml = GetXml(rss, xml_history)
@@ -31,16 +27,16 @@ def main():
         # 获取下载列表
         f = Filter(xml_history[rss], whitelist, blacklist, episodes)
         download_list = f()
-        if not downloader: continue
-        print(name,  download_list)
+        if not download_list: continue
+        print(anime_name,  download_list)
 
         if test_flag:
             # 下载种子, 并记录已下载的文件
             for episode in download_list:
                 url = download_list[episode]
                 InvokeDownloader(url, downloader)
-                write_anima(name, episode)
+                OperateAnimeConfigFile.write_episode_to_anime_config(anime_name, episode)
 
 if __name__ == "__main__":
-    self_test.test_anima_config()
+    test.test_anime_config()
     param(); main()

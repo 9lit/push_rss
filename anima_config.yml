@@ -1,14 +1,21 @@
 default:
   downloader: aria2
-  rssindex: 0
+  rss: 0
 
 rss:
-  - https://mikanani.me/RSS/MyBangumi?token=eoz1ajGuXAaU7LmsDmWKMw%3d%3d
+  - url1
+  - url2
 
 animation:
   不时轻声地以俄语遮羞的邻座艾莉同学:
     episode: 
     whitelist: 不时轻声地以俄语遮羞的邻座艾莉同学
     downloader: aria2
-    rssindex: 0
+    rss: 1
+
+  test:
+    episode: 1,2,3
+    whitelist:
+    rss:
+
 

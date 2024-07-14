@@ -5,7 +5,8 @@ home_dir = os.path.dirname(__file__)
 # 获取父目录
 PARENT_DIR = os.path.dirname(home_dir)
 # 获取配置文件所在位置
-ALIST = os.path.join(home_dir, "anima_config.yml")
+ALIST = os.path.join(home_dir, "perform_anima_config.yml")
+ALIST_DEFAULT = os.path.join(home_dir, "anima_config.yml")
 
 class Rss:
     # 过滤天数, 只获取 Day 天内的内容
