@@ -7,7 +7,6 @@ import sys
 def param():
 
     global test_flag
-    import sys
     test_flag = False if "-t" in sys.argv else True
 
 def main():
